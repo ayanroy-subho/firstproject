@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Sharpner Project</title>
+</head>
+
+<body>
+  <h2>Sharpner Project</h2>
+  <form id="expenseForm" action="#">
+    <label for="amount">Choose expense amount:</label>
+    <input type="number" id="amount" name="amount" required>
+
+    <label for="description">Choose Description:</label>
+    <select id="description" name="description">
+      <option>Volvo XC90</option>
+      <option>Saab 95</option>
+      <option>Mercedes SLK</option>
+      <option>Audi TT</option>
+    </select>
+
+    <label for="category">Choose Category:</label>
+    <select id="category" name="category">
+      <option>Movie</option>
+      <option>Shopping</option>
+      <option>Market</option>
+      <option>Diesel</option>
+    </select>
+
+    <button type="submit" onclick="saveFormData(event)">Add Expense</button>
+  </form>
+
+  <div id="expenseList"></div>
+
+  <script>
+    document.getElementById('expenseForm').addEventListener('submit', function (event) {
+      event.preventDefault();
+
+      const amount = document.getElementById('amount').value;
+      const description = document.getElementById('description').value;
+      const category = document.getElementById('category').value;
+
+      const formData = {
+        amount: amount,
+        description: description,
+        category: category
+      };
+
+      saveFormData(formData);
+    });
+
+    function saveFormData(formData) {
+      const expenses = JSON.parse(localStorage.getItem('expenses')) || [];
+
+      expenses.push(formData);
+      localStorage.setItem('expenses', JSON.stringify(expenses));
+
+      displayExpenses();
+    }
+
+    function displayExpenses() {
+      const expenses = JSON.parse(localStorage.getItem('expenses')) || [];
+      const expenseList = document.getElementById('expenseList');
+
+      expenseList.innerHTML = '';
+
+      for (let i = 0; i < expenses.length; i++) {
+        const expense = expenses[i];
+
+        if (expense.amount && expense.description && expense.category) {
+          expenseList.innerHTML += '<div>' +
+            expense.amount + ' - ' + expense.category + ' - ' + expense.description +
+            '<button onclick="editExpense(' + i + ')">Edit</button>' +
+            '<button onclick="deleteExpense(' + i + ')">Delete</button>' +
+            '</div><br>';
+        }
+      }
+    }
+
+    function editExpense(index) {
+      const expenses = JSON.parse(localStorage.getItem('expenses')) || [];
+      const editedExpense = expenses[index];
+
+      document.getElementById('amount').value = editedExpense.amount;
+      document.getElementById('description').value = editedExpense.description;
+      document.getElementById('category').value = editedExpense.category;
+
+      expenses.splice(index, 1);
+
+      localStorage.setItem('expenses', JSON.stringify(expenses));
+
+      displayExpenses();
+    }
+
+    function deleteExpense(index) {
+      const expenses = JSON.parse(localStorage.getItem('expenses')) || [];
+
+      expenses.splice(index, 1);
+
+      localStorage.setItem('expenses', JSON.stringify(expenses));
+
+      displayExpenses();
+    }
+
+    displayExpenses();
+  </script>
+</body>
+
+</html>
